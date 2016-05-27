@@ -142,15 +142,15 @@ module.exports = (robot) ->
         {
           fields: [
             { "title": "graph help", "value": "This helpful response!", "short": true }
-            ,{ "title": "graph <target>", "value": "Graph for <target>", "short": true }
-            ,{ "title": "graph <time|range> <target>", "value": "Graph for <target> using <time>\nTime example: -1h\nRange exameple: -6..-1h\nTarget example: vmpooler.running.*\nTargets example: foo.bar.baz + summarize(bar.baz.foo,'1day')", "short": false }
+            ,{ "title": "graph me <target>", "value": "Graph for <target>", "short": true }
+            ,{ "title": "graph me <time|range> <target>[ + <target2>[ + <targetN>]]", "value": "Graph for <target> using <time|range>\nTime example: -1h\nRange exameple: -6..-1h\nTarget example: vmpooler.running.*\nTargets example: foo.bar.baz + summarize(bar.baz.foo,'1day')", "short": false }
           ]
         }
       ]
     }
 
   robot.respond ///
-    graph(?:\s+me)?                       # graph me
+    graph me                       # graph me
 
     (?:                                   # optional time range
       (?:\s+
