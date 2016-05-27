@@ -13,10 +13,7 @@
 #   HUBOT_GRAPHITE_S3_IMAGE_PATH        - Subdirectory in which to store S3 snapshots (default: "hubot-graphme")
 #
 # Commands:
-#   hubot graph me vmpooler.running.* - show a graph for a graphite query using a target
-#   hubot graph me -1h vmpooler.running.* - show a graphite graph with a target and a from time
-#   hubot graph me -6h..-1h vmpooler.running.* - show a graphite graph with a target and a time range
-#   hubot graph me -6h..-1h foo.bar.baz + summarize(bar.baz.foo,"1day") - show a graphite graph with multiple targets
+#   hubot graph help - graphite commands
 #
 # Author:
 #   Rick Bradley (rick@rickbradley.com, github.com/rick)
@@ -136,6 +133,21 @@ module.exports = (robot) ->
   #
 
   timePattern = "(?:[-_:\/+a-zA-Z0-9]+)"
+
+  robot.respond /graph help$/, (msg) ->
+    robot.adapter.customMessage {
+      channel: msg.message.user.name,
+      text: "graphite commands",
+      attachments: [
+        {
+          fields: [
+            { "title": "graph help", "value": "This helpful response!", "short": true }
+            ,{ "title": "graph <target>", "value": "Graph for <target>", "short": true }
+            ,{ "title": "graph <time|range> <target>", "value": "Graph for <target> using <time>\nTime example: -1h\nRange exameple: -6..-1h\nTarget example: vmpooler.running.*\nTargets example: foo.bar.baz + summarize(bar.baz.foo,'1day')", "short": false }
+          ]
+        }
+      ]
+    }
 
   robot.respond ///
     graph(?:\s+me)?                       # graph me
