@@ -13,10 +13,10 @@
 #   HUBOT_GRAPHITE_S3_IMAGE_PATH        - Subdirectory in which to store S3 snapshots (default: "hubot-graphme")
 #
 # Commands:
-#   hubot graph me vmpooler.running.*                                    - show a graph for a graphite query using a target
-#   hubot graph me -1h vmpooler.running.*                                - show a graphite graph with a target and a from time
-#   hubot graph me -6h..-1h vmpooler.running.*                           - show a graphite graph with a target and a time range
-#   hubot graph me -6h..-1h foo.bar.baz + summarize(bar.baz.foo,"1day")  - show a graphite graph with multiple targets
+#   hubot graph me vmpooler.running.* - show a graph for a graphite query using a target
+#   hubot graph me -1h vmpooler.running.* - show a graphite graph with a target and a from time
+#   hubot graph me -6h..-1h vmpooler.running.* - show a graphite graph with a target and a time range
+#   hubot graph me -6h..-1h foo.bar.baz + summarize(bar.baz.foo,"1day") - show a graphite graph with multiple targets
 #
 # Author:
 #   Rick Bradley (rick@rickbradley.com, github.com/rick)
@@ -36,7 +36,7 @@ module.exports = (robot) ->
     result
 
   isConfigured = () ->
-    notConfigured().length == 0
+    process.env["HUBOT_GRAPHITE_URL"]
 
   buildQuery = (from, through, targets) ->
     return false unless targets
@@ -53,6 +53,10 @@ module.exports = (robot) ->
         through += "in" if through.match /\d+m$/ # -1m -> -1min
         result.push "until=#{encodeURIComponent(through)}"
 
+    result.push "lineMode=connected"
+    result.push "yMin=0"
+    result.push "width=1280"
+    result.push "height=400"
     result.push "format=png"
     result
 
@@ -163,7 +167,10 @@ module.exports = (robot) ->
       targets = msg.match[3]
 
       if query = buildQuery(from, through, targets)
-        fetchAndUpload(msg, "#{url}/render?#{query.join("&")}")
+        if process.env["HUBOT_GRAPHITE_S3_ACCESS_KEY_ID"]
+          fetchAndUpload(msg, "#{url}/render?#{query.join("&")}")
+        else
+          msg.send "#{url}/render?#{query.join("&")}"
       else
         msg.reply "Type: `help graph` for usage info"
     else
