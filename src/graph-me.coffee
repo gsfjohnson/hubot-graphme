@@ -135,19 +135,25 @@ module.exports = (robot) ->
   timePattern = "(?:[-_:\/+a-zA-Z0-9]+)"
 
   robot.respond /graph help$/, (msg) ->
-    robot.adapter.customMessage {
-      channel: msg.message.user.name,
-      text: "graphite commands",
-      attachments: [
-        {
-          fields: [
-            { "title": "graph help", "value": "This helpful response!", "short": true }
-            ,{ "title": "graph me <target>", "value": "Graph for <target>", "short": true }
-            ,{ "title": "graph me <time|range> <target>[ + <target2>[ + <targetN>]]", "value": "Graph for <target> using <time|range>\nTime example: -1h\nRange exameple: -6..-1h\nTarget example: vmpooler.running.*\nTargets example: foo.bar.baz + summarize(bar.baz.foo,'1day')", "short": false }
-          ]
-        }
-      ]
-    }
+    cmds = []
+    arr = [
+      "graph me <target> - Graph for <target>"
+      "graph me <time|range> <target>[ + <target2>[ + <targetN>]] - graph for <target> using <time|range>"
+      "time example: -1h - "
+      "range exameple: -6..-1h - "
+      "target example: vmpooler.running.* - "
+      "targets example: foo.bar.baz + summarize(bar.baz.foo,'1day') - "
+    ]
+
+    for str in arr
+      cmd = str.split " - "
+      cmds.push "`#{cmd[0]}` - #{cmd[1]}"
+
+    if replyInPrivate and msg.message?.user?.name?
+      msg.reply 'replied to you in private!'
+      robot.send {room: msg.message?.user?.name}, cmds.join "\n"
+    else
+      msg.reply cmds.join "\n"
 
   robot.respond ///
     graph me                       # graph me
