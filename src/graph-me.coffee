@@ -22,6 +22,8 @@ crypto  = require "crypto"
 knox    = require "knox"
 request = require "request"
 
+replyInPrivate = true
+
 module.exports = (robot) ->
 
   notConfigured = () ->
